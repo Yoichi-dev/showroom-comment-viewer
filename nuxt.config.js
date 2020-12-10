@@ -25,13 +25,26 @@ export default {
       { hid: 'og:image', property: 'og:image', content: process.env.BASE_IMG },
       { name: 'twitter:card', content: 'summary_large_image' },
     ],
+    script: [
+      {
+        src: 'https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js'
+      },
+      {
+        src: 'https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js'
+      }
+    ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      {
+        rel: 'stylesheet',
+        href: 'https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css'
+      }
     ]
   },
 
   // Global CSS (https://go.nuxtjs.dev/config-css)
   css: [
+    '@/assets/css/devices.min.css'
   ],
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
