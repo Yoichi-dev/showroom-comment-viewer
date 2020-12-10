@@ -230,6 +230,12 @@
         </div>
         <div class="row mt-5">
           <p class="h5">自分のルームID登録</p>
+          <div class="mx-auto" id="loading" v-if="loadingRoom">
+            <div class="spinner-border text-success" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            読み込み中...
+          </div>
           <div class="input-group">
             <input
               type="text"
@@ -260,6 +266,12 @@
         </div>
         <div class="row mt-5">
           <p class="h5">登録中のデータ</p>
+          <div class="mx-auto" id="loading" v-if="loadingKey">
+            <div class="spinner-border text-success" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>
+            読み込み中...
+          </div>
           <table class="table">
             <thead>
               <tr>
@@ -289,7 +301,11 @@
         <div class="row mt-5">
           <p class="h5">背景色変更</p>
           <div>
-            <input type="color" v-model="styles.backgroundColor" />
+            <input
+              type="color"
+              @change="saveColor()"
+              v-model="styles.backgroundColor"
+            />
             <label for="head">{{ styles.backgroundColor }}</label>
           </div>
         </div>
@@ -328,6 +344,8 @@ export default {
       styles: {
         backgroundColor: '#FFFFFF',
       },
+      loadingRoom: false,
+      loadingKey: false,
     }
   },
   mounted() {
@@ -367,6 +385,15 @@ export default {
       ).slice(-2)}:${('0' + jikan.getMinutes()).slice(-2)}`
     }, 1000)
 
+    if (this.$store.state.backgroundcolor != null) {
+      this.styles.backgroundColor = this.$store.state.backgroundcolor
+    }
+
+    if (this.$store.state.roomid != null) {
+      this.roomId = this.$store.state.roomid
+      this.check(this.roomId)
+    }
+
     document.getElementById('comment').onscroll = () => {
       let beforDom = document.getElementById('comment')
       if (
@@ -381,8 +408,10 @@ export default {
   },
   methods: {
     check(inputRoomId) {
+      this.loadingRoom = true
       if (inputRoomId === '' || inputRoomId.length < 5) {
         console.log('validation error')
+        this.loadingRoom = false
         return
       }
       let replaceRoomId = String(inputRoomId).replace(
@@ -392,19 +421,31 @@ export default {
       this.btnDisabled = true
 
       axios
-        .get('http://192.168.11.2:3001/apis/live_info/' + replaceRoomId)
+        .get(
+          'https://niconico-showroom-api.herokuapp.com/apis/live_info/' +
+            replaceRoomId
+        )
         .then((response) => {
-          response.data.room_name === undefined
-            ? alert('ページが存在しません')
-            : (this.roomData = response.data)
+          if (response.data.room_name === undefined) {
+            alert('ページが存在しません')
+          } else {
+            this.roomData = response.data
+            this.roomId = replaceRoomId
+            this.$store.commit('setRoomid', replaceRoomId)
+          }
         })
         .catch((err) => {
           alert('ページが存在しません')
         })
         .finally(() => {
           this.btnDisabled = false
-          this.roomId = replaceRoomId
+          this.loadingRoom = false
         })
+    },
+    saveColor() {
+      console.log(this.styles.backgroundColor)
+      this.$store.commit('setBackgroundColor', this.styles.backgroundColor)
+      console.log(this.$store.state.backgroundcolor)
     },
     addComments(data) {
       let dateTime = new Date(data.created_at * 1000)
@@ -457,8 +498,12 @@ export default {
       document.getElementById('msg-btm').style.display = 'none'
     },
     connectRoom() {
+      this.loadingKey = true
       axios
-        .get('http://192.168.11.2:3001/apis/live_info/' + this.roomId)
+        .get(
+          'https://niconico-showroom-api.herokuapp.com/apis/live_info/' +
+            this.roomId
+        )
         .then((response) => {
           if (response.data != '') {
             if (response.data.bcsvr_key != '') {
@@ -469,8 +514,10 @@ export default {
               setInterval(() => {
                 this.socket.send('PING	showroom')
               }, 60000)
+              this.loadingKey = false
             } else {
               alert('配信停止中です')
+              this.loadingKey = false
             }
           }
         })
