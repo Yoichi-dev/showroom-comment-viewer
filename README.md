@@ -1,20 +1,24 @@
-# showroom-comment-viewer
+# Showroom コメントビューワー
 
-## Build Setup
+[SHOWROOM](https://www.showroom-live.com/)のコメントをLINE風に出すことが出来るWebアプリケーション
+
+# DEMO
+
+[https://showroom-comment-viewer.yoichi.dev/](https://showroom-comment-viewer.yoichi.dev/)
+
+# Usage
 
 ```bash
-# install dependencies
+$ git clone https://github.com/Yoichi-dev/showroom-comment-viewer.git
+$ cd showroom-comment-viewer
 $ npm install
-
-# serve with hot reload at localhost:3000
 $ npm run dev
-
-# build for production and launch server
-$ npm run build
-$ npm run start
-
-# generate static project
-$ npm run generate
 ```
 
-For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
+# Author
+
+* よーいちろー [@TYoichiro](https://twitter.com/TYoichiro)
+
+# License
+
+[MIT license](https://en.wikipedia.org/wiki/MIT_License).
